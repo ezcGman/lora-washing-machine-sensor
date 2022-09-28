@@ -118,7 +118,7 @@ void setup() {
 
 void loop() {
   if (loraInitDone) {
-    byte deviceId = LORA_DEVICE_ID_A;
+    byte deviceId = LORA_DEVICE_ID;
     for (int i = 0; i <= 1; i++) {
       enableOutput(i);
       if (Serial) {
@@ -146,17 +146,8 @@ void loop() {
       loraMessage->amps = amps;
       loraMessage->watts = watts;
 
-      String message = loraMessage->toLoRaMessage();
-      LoRa.beginPacket();
-      LoRa.write(LORA_GATEWAY_ID); // Set recipient ID
-
       if (i == 1) deviceId = LORA_DEVICE_ID_B;
-      LoRa.write(deviceId); // Set sender ID
-
-      LoRa.write(LORA_MESSAGE_ID_POWER_CONSUMPTION); // Set message ID
-      LoRa.write(message.length()); // Message length
-      LoRa.print(message); // The concated message
-      LoRa.endPacket();
+      sendLoRaMessage(LORA_MESSAGE_ID_POWER_CONSUMPTION, loraMessage, LORA_GATEWAY_ID, deviceId);
     }
   }
 
