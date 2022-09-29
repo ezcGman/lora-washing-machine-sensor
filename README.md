@@ -39,7 +39,7 @@ These parts are not directly listed in the iBOM or need some further detail link
     - The actual spacing of the outer holes from middle to middle of the hole is 5.08mm
     - Some sellers list the outer spacing of the pins, which is 6mm
     - Some just list the inner spacing of the pins, which is 4mm
-    - But all of the above are ok, they gonna fit!
+    - But all of the above are ok, they gonna fit. There's also a [picture here](/pictures/rf-jack-spacing.jpg) to maybe help clarifying things
     - This seller always has a bunch at the time of writing: https://www.aliexpress.com/store/1100046103
 
 ### 3. Build the board and choose a power supply
