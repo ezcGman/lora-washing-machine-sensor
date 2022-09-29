@@ -75,6 +75,20 @@ With this, I do not touch the actual cables of the machines, and I do not have l
 
 With this, you have a safe and clean install, no AC wires open and you can easily put that box behind the machine and dryer.
 
+### 7. Read the values in Home Assistant
+This is pretty easy: Simply create two MQTT Sensors and with those, you can create your own smart automation to find out if your washine machine is done washing:
+```
+mqtt:
+  sensor:
+  - name: "[Basement] Washing Machine Watts"
+    state_topic: "lora-gateway-e32/devices/washing-machine-sensor/messages/power-consumption/watts"
+    icon: mdi:flash
+
+  - name: "[Basement] Dryer Watts"
+    state_topic: "lora-gateway-e32/devices/dryer-sensor/messages/power-consumption/watts"
+    icon: mdi:flash
+```
+
 ## Tools list to solder the PCB
 ### Required
 - A soldering iron
