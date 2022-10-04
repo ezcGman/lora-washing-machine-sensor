@@ -71,7 +71,7 @@ What I did (you can [see some photos here](/pictures/install-pics)) is getting t
 - One to plug in the washing machine
 - One to plug in the dryer
 
-With this, I do not touch the actual cables of the machines, plus: I do not have loose wires around! Inside the box, the two sockets (where the washing machine and dryer will be plugged into) are simply powered by the socket the power comes in, BUT: With using some Wagos, I can easily put the CT clamp around the L wire of the socket the machine and dryer is connected to.
+With this, I do not touch the actual cables of the machines, plus: I do not have loose wires around! Inside the box, the two sockets (where the washing machine and dryer will be plugged into) are simply powered by the socket the power comes in, BUT: By using some Wagos, I can easily put the CT clamp around the L wire of the socket the machine and dryer is connected to.
 
 Additionally, I modified a standard / cheap 1A phone charger by sawing off the two pins that would go into a power socket and instead soldered two wires to the PCB that then go into the Wagos inside the Box. And the 5V USB output goes to the PCB :) Pics are also in the same folder as above.
 
@@ -80,7 +80,7 @@ With this, you have a safe and clean install, no AC wires open and you can easil
 ### 7. Read the values in Home Assistant
 This is pretty easy:
 
-Firstcreate two MQTT Sensors that will read the watts from the MQTT topic the gateway will drop the readings into:
+First create two MQTT sensors that will read the watts from the MQTT topic the gateway will drop the readings into:
 ```
 mqtt:
   sensor:
