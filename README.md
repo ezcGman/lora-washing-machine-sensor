@@ -66,17 +66,21 @@ Now it gets a bit tricky and again: If you have never done AC / mains wiring and
 
 OK, so now that we got that sorted out: CT clamps can't just go around your 3-core power cable of your washing machine: They can only measure current if you install them around either the L or N wire, not both, only a single one. So you need to get creative on how you get access to that wire.
 
-What I did (and I will upload some photos) is getting three AC power sockets and mounted them to a box. Why three?
+What I did (you can [see some photos here](/pictures/install-pics)) is getting three AC power sockets and mounted them to a box. Why three?
 - One as power in, coming from the wall
 - One to plug in the washing machine
 - One to plug in the dryer
 
-With this, I do not touch the actual cables of the machines, and I do not have loose wires around! Inside the box, the two sockets where the washing machine and dryer are connected to are simply powered by the socket the power comes in, BUT: I can easily put the CT clamp around the L wire of the socket the machine and dryer is connected to. Additionally. I have a tiny PSU to power the sensor board. I was being extra careful and didn't want to mix AC and DC in the same box, so the PCB actually sits in a tiny box next to the one with the power sockets and I just drew positive and GND from the small PSU to it.
+With this, I do not touch the actual cables of the machines, plus: I do not have loose wires around! Inside the box, the two sockets (where the washing machine and dryer will be plugged into) are simply powered by the socket the power comes in, BUT: With using some Wagos, I can easily put the CT clamp around the L wire of the socket the machine and dryer is connected to.
+
+Additionally, I modified a standard / cheap 1A phone charger by sawing off the two pins that would go into a power socket and instead soldered two wires to the PCB that then go into the Wagos inside the Box. And the 5V USB output goes to the PCB :) Pics are also in the same folder as above.
 
 With this, you have a safe and clean install, no AC wires open and you can easily put that box behind the machine and dryer.
 
 ### 7. Read the values in Home Assistant
-This is pretty easy: Simply create two MQTT Sensors and with those, you can create your own smart automation to find out if your washine machine is done washing:
+This is pretty easy:
+
+Firstcreate two MQTT Sensors that will read the watts from the MQTT topic the gateway will drop the readings into:
 ```
 mqtt:
   sensor:
@@ -87,6 +91,57 @@ mqtt:
   - name: "[Basement] Dryer Watts"
     state_topic: "lora-gateway-e32/devices/dryer-sensor/messages/power-consumption/watts"
     icon: mdi:flash
+```
+
+Now we create two `input_boolean` helpers that will make writing the automations easier. They will simply store the "result" of an automation that detects if a machine is running:
+```
+washing_machine_status:
+  name: "[zzz-Helpers] Washing Machine Status"
+  initial: off
+  icon: mdi:washing-machine
+  
+dryer_status:
+  name: "[zzz-Helpers] Dryer Status"
+  initial: off
+  icon: mdi:tumble-dryer
+```
+
+And now, we can create two automations per machine to first check if it started and another one that detects if it's finished. You may wanna do a few runs of your machine to get some test data and see what can really be considered "finished". Our machine sometimes does a tiny break and doesn't consume anything. So I declare the machine being finished if the readings show a value below 15W for at least two minutes, to not fall for those tiny breaks:
+```
+- id: washing_machine_started_set_helper
+  alias: "[zzz-Helpers] Set helper sensor if washing machine is running"
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.basement_washing_machine_watts
+    above: 1000
+  condition:
+  - condition: state
+    entity_id: input_boolean.washing_machine_status
+    state: 'off'
+  action:
+  - service: input_boolean.turn_on
+    data:
+      entity_id: input_boolean.washing_machine_status
+      
+- id: washing_machine_finished
+  alias: "[Basement] Send notification and reset helper if washing machine has finished"
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.basement_washing_machine_watts
+    below: 15
+    for: 00:02:00
+  condition:
+  - condition: state
+    entity_id: input_boolean.washing_machine_status
+    state: 'on'
+  action:
+  - service: input_boolean.turn_off
+    data:
+      entity_id: input_boolean.washing_machine_status
+  - service: notify.all_phones
+    data:
+      title: "🧺 Washing Machine finished!"
+      message: "Get that laundry out there quickly!"
 ```
 
 ## Tools list to solder the PCB
