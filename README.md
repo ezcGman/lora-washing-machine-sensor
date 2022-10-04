@@ -75,6 +75,20 @@ With this, I do not touch the actual cables of the machines, and I do not have l
 
 With this, you have a safe and clean install, no AC wires open and you can easily put that box behind the machine and dryer.
 
+### 7. Read the values in Home Assistant
+This is pretty easy: Simply create two MQTT Sensors and with those, you can create your own smart automation to find out if your washine machine is done washing:
+```
+mqtt:
+  sensor:
+  - name: "[Basement] Washing Machine Watts"
+    state_topic: "lora-gateway-e32/devices/washing-machine-sensor/messages/power-consumption/watts"
+    icon: mdi:flash
+
+  - name: "[Basement] Dryer Watts"
+    state_topic: "lora-gateway-e32/devices/dryer-sensor/messages/power-consumption/watts"
+    icon: mdi:flash
+```
+
 ## Tools list to solder the PCB
 ### Required
 - A soldering iron
@@ -86,8 +100,12 @@ With this, you have a safe and clean install, no AC wires open and you can easil
   - Solder paste
   - Tweezers
 
-## Why the AMS117? Why not another LDO?
+## FAQ
+### Why the AMS117? Why not another LDO?
 Because: I have so many lying around here ¯\\_(ツ)\_/¯ It's not the best, but pretty famous, cheap and easy to get LDO. It theoretically can eat up to 18V, so you could power that board with 18V, if you wanted to. Not talking about the heat this thing generates, if you would ;)
 
 Its downsides are clearly the quiescent current of at least 5mA up to 13mA! There are also smaller LDOs (the AMS1117 is SOT-223), but with that screw terminal I wanted, it wouldn't matter anyways.
 If you want to change it, you're welcome to edit the PCB using KiCad :)
+
+### You're routing the SPI traces under the ESP antenna!
+Yes, I do :) And I know that it's usually a no-go to route (high speed) data traces under an RF antenna. But in this case, that's fine, because we're not using Wi-Fi: My source code turns off the antenna completely, waits for it to be actually off and then starts initializing the LoRa module using SPI.
